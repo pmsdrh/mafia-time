@@ -1,7 +1,12 @@
 module.exports = {
   join : async (interaction, db) => {
-    const user = interaction.user;
-		interaction.reply(`کاربر ${user} با موفقیت وارد شد!`)
+    try {
+      const user = interaction.user;
+
+  		interaction.reply(`کاربر <@${user.id}> با موفقیت وارد شد!`)
+    } catch (e) {
+      console.log(e)
+    }
   },
   left : async (interaction, db) => {
 

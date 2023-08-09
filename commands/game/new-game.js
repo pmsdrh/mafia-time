@@ -1,6 +1,6 @@
-const { ActionRowBuilder, ButtonBuilder, ButtonStyle, SlashCommandBuilder } = require('discord.js');
-const row = require('../../buttons/new-game.js')
-const embeds = require('../../embeds/new-game.js')
+const { ActionRowBuilder, SlashCommandBuilder } = require('discord.js');
+const row = require('../../components/buttons/new-game.js')
+const embeds = require('../../components/embeds/new-game.js')
 
 
 module.exports = {
@@ -8,13 +8,16 @@ module.exports = {
 		.setName('newgame')
 		.setDescription('شروع بازی جدید'),
 	async execute(interaction, db) {
-		await db.Game.create({
-			gameId: 'test',
-			channelId: interaction.channelId
-		})
-		await interaction.reply({
-			embeds: [embeds(interaction.user)],
-			components: [row],
-		});
+		try {
+			game = new db.Game()
+			if (await game.isGameExist(interaction)) return await interaction.reply('هم اکنون یک بازی در حال اجرا است');
+			game.createGame(interaction)
+			await interaction.reply({
+				embeds: [embeds(interaction.user)],
+				components: [row],
+			});
+		} catch (e) {
+			console.log(e)
+		}
 	},
 };

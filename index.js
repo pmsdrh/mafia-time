@@ -4,8 +4,10 @@ const path = require('node:path');
 const { Collection, Client, Events, GatewayIntentBits } = require('discord.js');
 require('dotenv').config()
 const events = require('./events/buttons')
-const db = require('./database/models')
-
+const db = require('./models');
+// (async () => {
+// 	await db.sequelize.sync({});
+// })()
 const client = new Client({ intents: [
 		GatewayIntentBits.Guilds,
 		GatewayIntentBits.GuildMessages,
@@ -36,7 +38,6 @@ client.once(Events.ClientReady, async () => {
 });
 
 client.on(Events.InteractionCreate, async interaction => {
-	console.log(interaction);
   if (interaction.isButton()) {
 		try {
 			await events[interaction.customId](interaction, db)
