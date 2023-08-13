@@ -3,17 +3,14 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Collection, Client, Events, GatewayIntentBits } = require('discord.js');
 require('dotenv').config()
-const events = require('./events/buttons')
+const btnEvents = require('./events/buttons')
+const mdlEvents = require('./events/modals')
+const slcEvents = require('./events/selects')
 const db = require('./models');
-// (async () => {
-// 	await db.sequelize.sync({});
-// })()
-const client = new Client({ intents: [
-		GatewayIntentBits.Guilds,
-		GatewayIntentBits.GuildMessages,
-		GatewayIntentBits.MessageContent,
-		GatewayIntentBits.GuildMembers,
-	] });
+(async () => {
+	await db.sequelize.sync({});
+})()
+const client = require('./client');
 
 client.commands = new Collection();
 const foldersPath = path.join(__dirname, 'commands');
@@ -38,9 +35,33 @@ client.once(Events.ClientReady, async () => {
 });
 
 client.on(Events.InteractionCreate, async interaction => {
+	if (interaction.isStringSelectMenu()){
+		try {
+			await slcEvents[interaction.customId](interaction, db)
+		} catch (e) {
+			console.error(error);
+			if (interaction.replied || interaction.deferred) {
+				await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+			} else {
+				await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			}
+		}
+	}
+	if (interaction.isModalSubmit()){
+		try {
+			await mdlEvents[interaction.customId](interaction, db)
+		} catch (e) {
+			console.error(error);
+			if (interaction.replied || interaction.deferred) {
+				await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+			} else {
+				await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			}
+		}
+	}
   if (interaction.isButton()) {
 		try {
-			await events[interaction.customId](interaction, db)
+			await btnEvents[interaction.customId](interaction, db)
 		} catch (e) {
 			console.error(error);
 			if (interaction.replied || interaction.deferred) {

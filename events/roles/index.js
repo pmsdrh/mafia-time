@@ -1,4 +1,4 @@
-const events = {}
+const roles = {}
 const fs = require('fs');
 const path = require('path');
 const basename = path.basename(__filename);
@@ -14,8 +14,8 @@ fs
     );
   })
   .forEach(file => {
-    const event = require(path.join(__dirname, file));
-    events[file.replace('.js', '')] = event
+    const role = require(path.join(__dirname, file));
+    roles[role.key] = role
   });
 
-module.exports = events
+module.exports = roles
