@@ -1,1 +1,1 @@
-# mafia-time-discord
+# mafia-time

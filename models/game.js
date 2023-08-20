@@ -27,16 +27,30 @@ module.exports = function(sequelize, DataTypes) {
           type: DataTypes.STRING,
           allowNull: false,
           defaultValue: "{}"
+        },
+        gameToken: {
+          type: DataTypes.STRING,
         }
     });
 
     Game.prototype.createGame = function(interaction) {
+      let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+      let token = ''
+      for ( var i = 0; i < 12; i++ ) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
       Game.create({
           channelId: interaction.channelId,
-          creator: interaction.user.id
+          creator: interaction.user.id,
+          gameToken: token
         });
     };
-
+    Game.prototype.setCache = async (key, value, gameId) => {
+      const game = await Game.findOne({where: {channelId: gameId}})
+      let cache = JSON.parse(game.cache)
+      cashe[key] = value
+      Game.update({cache: JSON.stringify(cache)}, {where: {channelId: gameId}})
+    }
     Game.prototype.setRoles = (interaction) => {
       const roles = []
       interaction.values.forEach(i => {
@@ -53,6 +67,16 @@ module.exports = function(sequelize, DataTypes) {
         return r
       });
     };
+    Game.prototype.validator = async (token, gameId, creator) => {
+      const validate = await Game.findOne({
+        where: {
+          channelId: gameId,
+          creator: creator,
+          gameToken: token
+        }
+      })
+      return await validate
+    }
     Game.prototype.isGameCreator = async function(interaction) {
       return await Game.findOne({where: {channelId: interaction.channelId}}).then(r => {
         if (r){

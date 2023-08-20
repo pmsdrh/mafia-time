@@ -1,11 +1,14 @@
 'use strict';
-const roles_event = require('../events/roles');
+const roles_event = require('../discord/events/roles');
 module.exports = function(sequelize, DataTypes) {
     const Player = sequelize.define('Player', {
         userId: {
           primaryKey: true,
           type: DataTypes.STRING,
           allowNull: false,
+        },
+        username: {
+          type: DataTypes.STRING
         },
         role: {
           type: DataTypes.STRING,
@@ -104,6 +107,7 @@ module.exports = function(sequelize, DataTypes) {
         console.log(game);
         Player.create({
           userId: interaction.user.id,
+          username: interaction.user.globalName,
           GameChannelId: game.channelId
         });
         return true
