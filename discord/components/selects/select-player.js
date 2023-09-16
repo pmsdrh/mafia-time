@@ -13,7 +13,6 @@ module.exports = async (filter, interaction, db) => {
         .setDescription('انتخاب بازیکن')
         .setValue(i.userId))
     });
-    console.log(players_list , 'lodddd');
     const select = new StringSelectMenuBuilder()
       .setCustomId('player-selection')
       .setPlaceholder('انتخاب بازیکن')

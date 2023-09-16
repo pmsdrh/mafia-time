@@ -24,7 +24,6 @@ module.exports = function(sequelize, DataTypes) {
 
     Player.prototype.onNight = async (interaction, client, db) => {
       try {
-        // client.users.send(i.userId, role_events[roles[0][0]].descriptions);
         const game = await sequelize.models.Game.findOne({
           where: {
             channelId: interaction.channelId
@@ -86,7 +85,19 @@ module.exports = function(sequelize, DataTypes) {
 
     Player.prototype.getPlayers = async (interaction) => {
       try {
-        return await Player.findAll({where: {GameChannelId: interaction.channelId}})
+        return await Player.findAll({
+          where: {
+            GameChannelId: interaction.channelId
+          }
+        })
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    Player.prototype.getPlayer = async (userId) => {
+      try {
+        return await Player.findOne({where: {userId: userId}})
       } catch (e) {
         console.log(e)
       }
@@ -102,9 +113,12 @@ module.exports = function(sequelize, DataTypes) {
 
     Player.prototype.onJoin = async function(interaction) {
       try {
-        const game = await sequelize.models.Game.findOne({where: {channelId: interaction.channelId}})
+        const game = await sequelize.models.Game.findOne({
+          where: {
+            channelId: interaction.channelId
+          }
+        })
         if (!game) return false;
-        console.log(game);
         Player.create({
           userId: interaction.user.id,
           username: interaction.user.globalName,

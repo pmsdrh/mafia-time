@@ -33,10 +33,15 @@ module.exports = function(sequelize, DataTypes) {
         }
     });
 
+    Game.prototype.getCache = async (gameId) => {
+      const game = await Game.findOne({where: {channelId: gameId}})
+      return JSON.parse(game.cache);
+    }
+
     Game.prototype.createGame = function(interaction) {
       let chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
       let token = ''
-      for ( var i = 0; i < 12; i++ ) {
+      for ( var i = 0; i < 16; i++ ) {
         token += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       Game.create({
@@ -49,21 +54,38 @@ module.exports = function(sequelize, DataTypes) {
       const game = await Game.findOne({where: {channelId: gameId}})
       let cache = JSON.parse(game.cache)
       cashe[key] = value
-      Game.update({cache: JSON.stringify(cache)}, {where: {channelId: gameId}})
+      Game.update({cache: JSON.stringify(cache)}, {
+         where: {
+           channelId: gameId
+         }
+       })
     }
     Game.prototype.setRoles = (interaction) => {
       const roles = []
       interaction.values.forEach(i => {
         roles.push(i + '.1')
       });
-      Game.update({roles:roles.join(',')}, {where: {channelId: interaction.channelId}})
+      Game.update({roles: roles.join(',')}, {
+        where: {
+          channelId: interaction.channelId
+        }
+      })
     }
     Game.prototype.editRoles = (roles, interaction) => {
       Game.update({roles:roles}, {where: {channelId: interaction.channelId}})
     }
-
+    Game.prototype.link = async (interaction) => {
+      const game = await Game.findOne({
+        where: {
+          channelId: interaction.channelId
+        }
+      })
+      const url = "https://mafiatime.iran.liara.run"
+      return `${url}/${game.gameToken}/${game.channelId}/${game.creator}`
+    }
     Game.prototype.isGameExist = async function(interaction) {
-      return await Game.findOne({where: {channelId: interaction.channelId}}).then(r => {
+      return await Game.findOne({where: {channelId: interaction.channelId}})
+      .then(r => {
         return r
       });
     };
@@ -78,7 +100,8 @@ module.exports = function(sequelize, DataTypes) {
       return await validate
     }
     Game.prototype.isGameCreator = async function(interaction) {
-      return await Game.findOne({where: {channelId: interaction.channelId}}).then(r => {
+      return await Game.findOne({where: {channelId: interaction.channelId}})
+      .then(r => {
         if (r){
           if (r.creator === interaction.user.id) return true;
           return false;
@@ -87,7 +110,11 @@ module.exports = function(sequelize, DataTypes) {
     };
     Game.prototype.removeGame = (interaction) => {
       try {
-        sequelize.models.Player.destroy({where: {GameChannelId: interaction.channelId}})
+        sequelize.models.Player.destroy({
+          where: {
+            GameChannelId: interaction.channelId
+          }
+        })
         Game.destroy({where: {channelId: interaction.channelId}})
       } catch (e) {
 

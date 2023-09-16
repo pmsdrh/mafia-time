@@ -1,8 +1,8 @@
 import React from 'react';
-import NavBar from '../components/layout/navbar';
-import Footer from '../components/layout/footer';
-import SideBar from '../components/layout/sider';
-import RolesCounter from '../components/settings/roles-counter';
+import NavBar from '../components/admin/layout/navbar';
+import Footer from '../components/admin/layout/footer';
+import SideBar from '../components/admin/layout/sider';
+import RolesCounter from '../components/admin/settings/roles-counter';
 import { Routes, Route, useParams } from "react-router-dom";
 import { Breadcrumb, Layout, theme } from 'antd';
 

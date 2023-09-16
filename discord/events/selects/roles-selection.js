@@ -7,7 +7,7 @@ module.exports = async (interaction, db) => {
     interaction.message.delete()
     game.setRoles(interaction)
 
-    await interaction.reply({content: 'تعداد نقش های منفی را انتخاب کنید!(در صورتی که تعداد نقش های منفی بیشتر از تعداد نقش های انتخاب شده باشد مابقی بازیکنان به مافیا تغییر نقش پیدا می کنند.)',
+    await interaction.reply({content: 'تنظیمات بازی:',
      components:[row]});
   } catch (e) {
     console.log(e)
